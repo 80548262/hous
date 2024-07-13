@@ -1,6 +1,8 @@
 import unittest
 from app import app, db, Movie, User, forge, initdb
 
+app = Flask(__name__)
+
 class WatchlistTestCase(unittest.TestCase):
     # 测试固件
     # def setUp(self):
