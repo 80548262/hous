@@ -1,6 +1,6 @@
 import unittest
 from app import app, db, Movie, User, forge, initdb
-from flask import render_template
+
 
 app = Flask(__name__)
 
