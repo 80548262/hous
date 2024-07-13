@@ -1,5 +1,5 @@
 import unittest
-from app import app, db, Movie, User, forge, initdb
+from app import app, db, Movie, User, initdb
 
 
 
