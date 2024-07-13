@@ -13,48 +13,41 @@ from flask_login import login_required, logout_user
 from flask_login import login_required, current_user
 
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
-app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(os.path.dirname(app.root_path),os.getenv('DATABASE_FILE','data.db'))
-
-
-
-# 检测操作系统，设置不同的 SQLite URI 前缀
+# 创建 Flask 应用实例前的配置
 WIN = sys.platform.startswith('win')
 if WIN:
     prefix = 'sqlite:///'
 else:
     prefix = 'sqlite:////'
 
-# 创建 Flask 应用实例
 app = Flask(__name__)
-login_manager = LoginManager(app) # 实例化扩展类
-@login_manager.user_loader
-def load_user(user_id): # 创建用户加载回调函数，接受用户 ID 作为参数
-    user = User.query.get(int(user_id)) # 用 ID 作为 User 模型的主键查询对应的用户
-    return user # 返回用户对象
-
-# 配置 SQLite 数据库路径
-app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
-# 关闭对模型修改的监控
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
+app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(os.path.dirname(app.root_path), os.getenv('DATABASE_FILE', 'data.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # 初始化 SQLAlchemy 扩展
 db = SQLAlchemy(app)
-#初始化login_manager扩展
-login_manager.login_view = 'login'# 设置登录视图的端点
 
+# 初始化登录管理器
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
-# 定义 User 模型，对应数据库中的 user 表
-class User(db.Model,UserMixin):
+# 定义 User 模型
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
-    username = db.Column(db.String(20))  # 用户名
-    password_hash = db.Column(db.String(128))  # 密码散列值
-    def set_password(self, password): # 用来设置密码的方法，接受密码作为参数
-        self.password_hash = generate_password_hash(password)# 将生成的密码保持到对应字段
+    username = db.Column(db.String(20))
+    password_hash = db.Column(db.String(128))
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
 
     def validate_password(self, password):
-        return check_password_hash(self.password_hash, password) # 返回布尔值
+        return check_password_hash(self.password_hash, password)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 # 定义 Movie 模型，对应数据库中的 movie 表
