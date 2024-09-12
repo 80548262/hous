@@ -4,8 +4,8 @@
 CONFIG_FILE="/etc/sysconfig/network-scripts/ifcfg-eth0"
 
 # 提示用户输入新的 IPv4 和 IPv6 地址
-read -p "请输入新的 IPv4 地址（例如：192.168.1.125/24）: " NEW_IPV4
-read -p "请输入新的 IPv6 地址（例如：2a01:4f8:221:38d9::125/64）: " NEW_IPV6
+read -p "请输入新的 IPv4 地址（例如：192.168.1.125）注意不要加/24: " NEW_IPV4
+read -p "请输入新的 IPv6 地址（例如：2a01:4f8:221:38d9::125）注意不要加/26: " NEW_IPV6
 
 # 使用 sed 命令替换文件中的 IPv4 和 IPv6 地址
 sudo sed -i "s|IPADDR=.*|IPADDR=\"$NEW_IPV4\"|g" $CONFIG_FILE
